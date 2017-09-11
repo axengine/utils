@@ -41,32 +41,43 @@ func (p *TOMap) Add(key string, v interface{}, expire time.Duration) {
 	p.mu.Unlock()
 }
 
-// ReSet 在TOM中重新设置K的V和超时时间
+// Expire 设置key的过期时间
+func (p *TOMap) Expire(key string, expire time.Duration) {
+	p.mu.RLock()
+	if n, ok := p.data[key]; ok {
+		p.tm.Set(n.td, expire)
+	}
+	p.mu.RUnlock()
+}
+
+// ReSet 在TOM中重新设置K的V和超时时间,如果Key存在替换为新V
 func (p *TOMap) ReSet(key string, v interface{}, expire time.Duration) {
-	n, ok := p.data[key]
-	if ok {
+	p.mu.RLock()
+	if n, ok := p.data[key]; ok {
 		p.tm.Set(n.td, expire)
 		n.v = v
-	} else {
-		n := new(node)
-		n.v = v
-		td := p.tm.Add(expire, p.toHandle, key)
-		n.td = td
-		p.mu.Lock()
-		p.data[key] = n
-		p.mu.Unlock()
+		p.mu.RUnlock()
+		return
 	}
+	p.mu.RUnlock()
+
+	n := new(node)
+	n.v = v
+	td := p.tm.Add(expire, p.toHandle, key)
+	n.td = td
+	p.mu.Lock()
+	p.data[key] = n
+	p.mu.Unlock()
 }
 
 // Del 在TOM中删除K
 func (p *TOMap) Del(key string) {
-	n, ok := p.data[key]
-	if ok {
+	p.mu.Lock()
+	if n, ok := p.data[key]; ok {
 		p.tm.Del(n.td)
-		p.mu.Lock()
 		delete(p.data, key)
-		p.mu.Unlock()
 	}
+	p.mu.Unlock()
 }
 
 // Get 从TOM中获取K的V
