@@ -1,6 +1,8 @@
+//fork from github.com/zieckey/etcdsync
 package sync
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -33,7 +35,7 @@ type Mutex struct {
 // New creates a Mutex with the given key which must be the same
 // across the cluster nodes.
 // machines are the ectd cluster addresses
-func New(key string, ttl int, machines []string) *Mutex {
+func New(key string, ttl int, machines []string) (*Mutex, error) {
 	cfg := client.Config{
 		Endpoints:               machines,
 		Transport:               client.DefaultTransport,
@@ -42,16 +44,16 @@ func New(key string, ttl int, machines []string) *Mutex {
 
 	c, err := client.New(cfg)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	hostname, err := os.Hostname()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	if len(key) == 0 || len(machines) == 0 {
-		return nil
+		return nil, errors.New("wrong lock key or empty machines")
 	}
 
 	if key[0] != '/' {
@@ -70,7 +72,7 @@ func New(key string, ttl int, machines []string) *Mutex {
 		ctx:    context.TODO(),
 		ttl:    time.Second * time.Duration(ttl),
 		mutex:  new(sync.Mutex),
-	}
+	}, nil
 }
 
 // Lock locks m.
@@ -117,7 +119,8 @@ func (m *Mutex) lock() (err error) {
 		// Get the already node's value.
 		resp, err = m.kapi.Get(m.ctx, m.key, nil)
 		if err != nil {
-			return err
+			m.debug("Get node err [%v]", err)
+			continue
 		}
 		m.debug("Get node %v OK", m.key)
 		watcherOptions := &client.WatcherOptions{
@@ -163,6 +166,21 @@ func (m *Mutex) Unlock() (err error) {
 			return nil
 		}
 	}
+	return err
+}
+
+func (m *Mutex) RefreshLockTTL(ttl time.Duration) (err error) {
+	setOptions := &client.SetOptions{
+		PrevExist: client.PrevExist,
+		TTL:       ttl,
+	}
+	resp, err := m.kapi.Set(m.ctx, m.key, m.id, setOptions)
+	if err != nil {
+		m.debug("Refresh ttl of %v failed [%q]", m.key, resp)
+	} else {
+		m.debug("Refresh ttl of %v OK", m.key)
+	}
+
 	return err
 }
 
