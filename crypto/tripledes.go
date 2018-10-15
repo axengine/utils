@@ -17,7 +17,7 @@ func TripleDesECBEncrypt(origData []byte, key string) ([]byte, error) {
 		return nil, err
 	}
 	bs := block.BlockSize()
-	origData = pkcs5Padding(origData, bs)
+	origData = PKCSPadding(origData, bs)
 	if len(origData)%bs != 0 {
 		return nil, errors.New("Need a multiple of the blocksize")
 	}
@@ -49,7 +49,7 @@ func TripleDesECBDecrypt(crypted []byte, key string) ([]byte, error) {
 		crypted = crypted[bs:]
 		dst = dst[bs:]
 	}
-	out = pkcs5UnPadding(out)
+	out = PKCSPadding(out, block.BlockSize())
 	return out, nil
 }
 
