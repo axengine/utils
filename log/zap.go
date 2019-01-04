@@ -86,5 +86,5 @@ func init() {
 		makeErrorFilter(),
 	)
 
-	Logger = zap.New(zapcore.NewTee(coreDebug, coreInfo, coreError))
+	Logger = zap.New(zapcore.NewTee(coreDebug, coreInfo, coreError), zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))
 }
