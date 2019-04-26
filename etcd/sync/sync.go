@@ -81,7 +81,7 @@ func New(key string, ttl int, machines []string) (*Mutex, error) {
 func (m *Mutex) Lock() (err error) {
 	m.mutex.Lock()
 	for try := 1; try <= defaultTry; try++ {
-		err = m.lock()
+		err = m.lock_failfast()
 		if err == nil {
 			return nil
 		}
@@ -142,6 +142,22 @@ func (m *Mutex) lock() (err error) {
 			}
 		}
 	}
+	return err
+}
+
+func (m *Mutex) lock_failfast() error {
+	m.debug("Trying to create a node : key=%v", m.key)
+	setOptions := &client.SetOptions{
+		PrevExist: client.PrevNoExist,
+		TTL:       m.ttl,
+	}
+
+	resp, err := m.kapi.Set(m.ctx, m.key, m.id, setOptions)
+	if err == nil {
+		m.debug("Create node %v OK [%q]", m.key, resp)
+		return nil
+	}
+
 	return err
 }
 
