@@ -28,9 +28,6 @@ func (f *FIFO) Enqueue(i interface{}) bool {
 		return false
 	}
 
-	//if f.rear == f.front {
-	//	f.queue[f.front] = i
-	//}
 	f.queue[f.rear] = i
 	f.rear = (f.rear + 1) % (f.size + 1)
 	f.mu.Unlock()
@@ -44,6 +41,7 @@ func (f *FIFO) Dequeue() interface{} {
 		return nil
 	}
 	x := f.queue[f.front]
+	f.queue[f.front] = nil
 	f.front = (f.front + 1) % (f.size + 1)
 	f.mu.Unlock()
 	return x
