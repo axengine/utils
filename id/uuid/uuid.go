@@ -1,5 +1,5 @@
 // UUID生产 代码摘自mgo
-package id
+package uuid
 
 import (
 	"crypto/md5"
@@ -28,12 +28,12 @@ var machineId = readMachineId()
 // http://www.mongodb.org/display/DOCS/Object+IDs
 type ObjectId string
 
-func GetUUID() string {
+func GenUUID() string {
 	objID := NewObjectId()
 	return objID.Md5()
 }
 
-func GetGuid() string {
+func GenGUID() string {
 	b := make([]byte, 16)
 	if _, err := io.ReadFull(rand.Reader, b); err != nil {
 		return ""
