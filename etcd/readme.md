@@ -1,7 +1,8 @@
 # sync
-* sync Mutex为悲观锁，拿不到锁会一直阻塞
-* sync New的时候会连接ETCD，失败返回nil；Lock时去set key，知道set成功或发生错误；UnLock时删除key；
-* Lock是阻塞的，如果key一直没有expire或delete，会永远阻塞,因此set key时应正确设置ttl；
+* sync Mutex
+* sync New的时候会连接ETCD，失败返回nil；LockBlocking时去set key，直到set成功或发生错误；UnLock时删除key；
+* LockBlocking是阻塞的，如果key一直没有expire或delete，会永远阻塞,因此set key时应正确设置ttl；
+* Lock是非阻塞的，如果已经加锁会立即返回失败
 * 多个任务去获取同一把锁，会先后获取到锁
 
 # Master

@@ -76,19 +76,26 @@ func New(key string, ttl int, machines []string) (*Mutex, error) {
 }
 
 // Lock locks m.
-// If the lock is already in use, the calling goroutine
-// blocks until the mutex is available.
+// If the lock is already in use, return err.
 func (m *Mutex) Lock() (err error) {
 	m.mutex.Lock()
+	return m.lock_failfast()
+}
+
+// LockNonBlock locks m.
+// If the lock is already in use, the calling goroutine
+// blocks until the mutex is available.
+func (m *Mutex) LockBlocking() (err error) {
+	m.mutex.Lock()
 	for try := 1; try <= defaultTry; try++ {
-		err = m.lock_failfast()
+		err = m.lock()
 		if err == nil {
 			return nil
 		}
 
 		m.debug("Lock node %v ERROR %v", m.key, err)
 		if try < defaultTry {
-			m.debug("Try to lock node %v again", m.key, err)
+			m.debug("Try to lock node %v again", m.key)
 		}
 	}
 	return err
