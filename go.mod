@@ -21,6 +21,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.11.2 // indirect
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/nsqio/go-nsq v1.0.7
+	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.1.0 // indirect
 	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4 // indirect
 	github.com/soheilhy/cmux v0.1.4 // indirect
