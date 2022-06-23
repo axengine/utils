@@ -1,11 +1,11 @@
 package sync
 
 import (
+	"go.etcd.io/etcd/client/v2"
 	"log"
 	"testing"
 	"time"
 
-	"github.com/coreos/etcd/client"
 	"golang.org/x/net/context"
 )
 

@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/coreos/etcd/client"
+	"go.etcd.io/etcd/client/v2"
 	"golang.org/x/net/context"
 )
 

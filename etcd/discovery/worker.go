@@ -2,11 +2,11 @@ package discovery
 
 import (
 	"encoding/json"
+	"go.etcd.io/etcd/client/v2"
 	"log"
 	"runtime"
 	"time"
 
-	"github.com/coreos/etcd/client"
 	"golang.org/x/net/context"
 )
 
