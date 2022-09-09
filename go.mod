@@ -7,7 +7,7 @@ require (
 	github.com/nsqio/go-nsq v1.1.1-0.20211128180740-827b83641ce6
 	github.com/pkg/errors v0.9.2-0.20201214064552-5dd12d0cfe7f
 	github.com/vmihailenco/msgpack/v4 v4.2.1
-	go.uber.org/zap v1.21.1-0.20220622230248-78c80fbae8e7
+	go.uber.org/zap v1.23.0
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/net v0.0.0-20220622184535-263ec571b305
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0-20170531160350-a96e63847dc3
