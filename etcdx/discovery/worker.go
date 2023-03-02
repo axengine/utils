@@ -16,7 +16,7 @@ type Worker struct {
 	KeysAPI client.KeysAPI
 }
 
-// workerInfo is the service register information to etcd
+// workerInfo is the service register information to etcdx
 type WorkerInfo struct {
 	Name string
 	IP   string
@@ -32,7 +32,7 @@ func NewWorker(name, IP string, endpoints []string) *Worker {
 
 	etcdClient, err := client.New(cfg)
 	if err != nil {
-		log.Fatal("Error: cannot connec to etcd:", err)
+		log.Fatal("Error: cannot connec to etcdx:", err)
 	}
 
 	w := &Worker{

@@ -31,7 +31,7 @@ func NewMaster(endpoints []string) *Master {
 
 	etcdClient, err := client.New(cfg)
 	if err != nil {
-		log.Fatal("Error: cannot connec to etcd:", err)
+		log.Fatal("Error: cannot connec to etcdx:", err)
 	}
 
 	master := &Master{

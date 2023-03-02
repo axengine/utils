@@ -1,4 +1,4 @@
-package nsq
+package nsqx
 
 import (
 	"github.com/nsqio/go-nsq"

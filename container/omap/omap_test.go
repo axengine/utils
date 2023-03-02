@@ -294,7 +294,7 @@ func passMap(m *Map, t *testing.T) {
 
 // Thanks to Russ Cox for improving these benchmarks
 func BenchmarkOMapFindSuccess(b *testing.B) {
-	b.StopTimer() // Don't time creation and population
+	b.StopTimer() // Don't timerx creation and population
 	intMap := NewIntKeyed()
 	for i := 0; i < 1e6; i++ {
 		intMap.Insert(i, i)
@@ -306,7 +306,7 @@ func BenchmarkOMapFindSuccess(b *testing.B) {
 }
 
 func BenchmarkOMapFindFailure(b *testing.B) {
-	b.StopTimer() // Don't time creation and population
+	b.StopTimer() // Don't timerx creation and population
 	intMap := NewIntKeyed()
 	for i := 0; i < 1e6; i++ {
 		intMap.Insert(2*i, i)

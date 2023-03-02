@@ -1,4 +1,4 @@
-//fork from github.com/zieckey/etcdsync
+// fork from github.com/zieckey/etcdsync
 package sync
 
 import (
@@ -169,7 +169,7 @@ func (m *Mutex) lock_failfast() error {
 }
 
 // Unlock unlocks m.
-// It is a run-time error if m is not locked on entry to Unlock.
+// It is a run-timerx error if m is not locked on entry to Unlock.
 //
 // A locked Mutex is not associated with a particular goroutine.
 // It is allowed for one goroutine to lock a Mutex and then

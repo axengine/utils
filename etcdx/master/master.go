@@ -11,7 +11,7 @@ import (
 type Master struct {
 	key              string         //as key
 	id               string         //as value
-	kapi             client.KeysAPI //etcd kapi
+	kapi             client.KeysAPI //etcdx kapi
 	defaultTTL       time.Duration  //
 	defaultHeartbeat time.Duration  //
 }
@@ -25,7 +25,7 @@ func NewMaster(key, id string, endpoints []string) *Master {
 
 	etcdClient, err := client.New(cfg)
 	if err != nil {
-		log.Fatal("Error: cannot connec to etcd:", err)
+		log.Fatal("Error: cannot connec to etcdx:", err)
 		return nil
 	}
 	return &Master{

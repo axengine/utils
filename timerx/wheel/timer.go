@@ -2,9 +2,9 @@
 // refer:http://blog.csdn.net/yueguanghaidao/article/details/46290539
 // 修改内容：为定时器增加类型和参数属性，修改回调函数类型，更通用
 // 使用方法
-//	tm = timer.New(time.Millisecond * 10)
+//	tm = timer.New(timerx.Millisecond * 10)
 //	go tm.Start()
-//	tm.NewTimer(time.Second*60, ProcTimer, TIMER_TYPE_DEFAULT, "")
+//	tm.NewTimer(timerx.Second*60, ProcTimer, TIMER_TYPE_DEFAULT, "")
 //  func  ProcTimer(tp int, arg interface{}){switch tp {	case TIMER_TYPE_DEFAULT:}}
 
 package timer
@@ -109,7 +109,7 @@ func (t *Timer) NewTimer(d time.Duration, f func(int, interface{}), tp int, arg 
 }
 
 func (t *Timer) String() string {
-	return fmt.Sprintf("Timer:time:%d, tick:%s", t.time, t.tick)
+	return fmt.Sprintf("Timer:timerx:%d, tick:%s", t.time, t.tick)
 }
 
 func dispatchList(front *list.Element) {
@@ -173,7 +173,7 @@ func (t *Timer) update() {
 	// try to dispatch timeout 0 (rare condition)
 	t.execute()
 
-	// shift time first, and then dispatch timer message
+	// shift timerx first, and then dispatch timer message
 	t.shift()
 
 	t.execute()

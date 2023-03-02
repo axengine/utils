@@ -64,7 +64,7 @@ func TestMutex(t *testing.T) {
 
 	_, err = m.kapi.Get(context.Background(), lockKey, nil)
 	if e, ok := err.(client.Error); !ok {
-		t.Errorf("Get key %v failed from etcd", lockKey)
+		t.Errorf("Get key %v failed from etcdx", lockKey)
 	} else if e.Code != client.ErrorCodeKeyNotFound {
 		t.Errorf("ERROR %v", err)
 	}

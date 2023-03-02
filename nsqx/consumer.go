@@ -1,4 +1,4 @@
-package nsq
+package nsqx
 
 import (
 	"log"
@@ -21,13 +21,13 @@ type TopicDiscoverer struct {
 	cfg    *nsq.Config
 }
 
-//NewTopicDiscoverer 生成多个主题发现的消费者
-//topics 订阅主题列表
-//channel channel名称
-//maxInFlight NSQD在有maxInFlight*25条消息时向下推送
-//lookupdHTTPAddrs NSQLOOKUPs的http地址
-//handle 消息处理句柄
-//PS:对channel不同的topic应该生成不同的消费者
+// NewTopicDiscoverer 生成多个主题发现的消费者
+// topics 订阅主题列表
+// channel channel名称
+// maxInFlight NSQD在有maxInFlight*25条消息时向下推送
+// lookupdHTTPAddrs NSQLOOKUPs的http地址
+// handle 消息处理句柄
+// PS:对channel不同的topic应该生成不同的消费者
 func NewTopicDiscoverer(topics []string, channel string, maxInFlight int, lookupdHTTPAddrs []string, handle func(string, interface{})) *TopicDiscoverer {
 	var discoverer TopicDiscoverer
 	discoverer.topics = make(map[string]*consumerDispatcher)
@@ -76,7 +76,7 @@ func newDispatcher(topic string, handle func(string, interface{})) *dispatcher {
 	return &disp
 }
 
-//HandleMessage 消息处理句柄 实现接口Handler
+// HandleMessage 消息处理句柄 实现接口Handler
 func (p *dispatcher) HandleMessage(msg *nsq.Message) error {
 	p.handle(p.topic, msg.Body)
 	return nil

@@ -1,4 +1,4 @@
-package redis
+package redisx
 
 import (
 	"github.com/garyburd/redigo/redis"
