@@ -6,7 +6,7 @@ import (
 	"errors"
 )
 
-func AES256_CBC_PKCS0Encrpt(src []byte, iv []byte, key []byte) ([]byte, error) {
+func AES256CBCPKCS0Encrypt(src []byte, iv []byte, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func AES256_CBC_PKCS0Encrpt(src []byte, iv []byte, key []byte) ([]byte, error) {
 	return dst, nil
 }
 
-func AES256_CBC_PKCS0Decrpt(src []byte, iv []byte, key []byte) ([]byte, error) {
+func AES256CBCPKCS0Decrypt(src []byte, iv []byte, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err

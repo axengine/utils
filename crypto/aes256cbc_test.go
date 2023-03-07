@@ -18,7 +18,7 @@ func TestAES256_CBC_PKCS0Encrpt(t *testing.T) {
 	//iv, _ := base64.StdEncoding.DecodeString(ivStr)
 	iv := []byte(ivStr)
 	key := []byte(keyStr)
-	dst, err := AES256_CBC_PKCS0Encrpt(src, iv, key)
+	dst, err := AES256CBCPKCS0Encrypt(src, iv, key)
 	if err != nil {
 		t.Error(err)
 	}
@@ -32,7 +32,7 @@ func TestAES256_CBC_PKCS0Decrpt(t *testing.T) {
 	src, _ := base64.StdEncoding.DecodeString(dstStr)
 	iv, _ := base64.StdEncoding.DecodeString(ivStr)
 	key := []byte(keyStr)
-	dst, err := AES256_CBC_PKCS0Decrpt(src, iv, key)
+	dst, err := AES256CBCPKCS0Decrypt(src, iv, key)
 	if err != nil {
 		t.Error(err)
 	}

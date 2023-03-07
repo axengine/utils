@@ -6,7 +6,7 @@ import (
 	"errors"
 )
 
-// AESDecrypt AES加密 初始向量16字节空 PKCS5 CBC
+// AESEncrypt AES加密 初始向量16字节空 PKCS5 CBC
 // 入参:src 待加密[]byte
 // key:密钥[]byte 16/24/32
 // 返回:加密后[]byte
@@ -27,7 +27,7 @@ func AESEncrypt(src, key []byte) ([]byte, error) {
 	return dst, nil
 }
 
-// AESEncrypt AES解密 初始向量16字节空 PKCS5 CBC
+// AESDecrypt AES解密 初始向量16字节空 PKCS5 CBC
 // 入参:src 已加密[]byte
 // key:密钥[]byte 16/24/32
 // 返回:解密后[]byte
