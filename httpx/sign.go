@@ -28,7 +28,7 @@ import (
 type APISign struct {
 	AccessKey    string
 	AccessSecret string
-	TTL          time.Duration
+	TTL          int64
 	Method
 }
 
@@ -41,7 +41,7 @@ const (
 	HmacSha256Hex Method = "HMAC-SHA256-HEX"
 )
 
-func NewAPISign(accessKey, accessSecret string, ttl time.Duration, method Method) *APISign {
+func NewAPISign(accessKey, accessSecret string, ttl int64, method Method) *APISign {
 	return &APISign{
 		AccessKey:    accessKey,
 		AccessSecret: accessSecret,
@@ -51,107 +51,97 @@ func NewAPISign(accessKey, accessSecret string, ttl time.Duration, method Method
 }
 
 // Verify param sign result verify
-func (apiSign *APISign) Verify(req *http.Request, authHeaderKey string) error {
-	val := req.Header.Get(authHeaderKey)
-	if val == "" {
-		return fmt.Errorf("signature header required:%s", authHeaderKey)
+// req:the http.Request
+// authHeaderName:header name,like X-Signature,value:accessKey:signature:deadline
+func (p *APISign) Verify(req *http.Request, authHeaderName string) error {
+	authStr := req.Header.Get(authHeaderName)
+	if authStr == "" {
+		return fmt.Errorf("signature header required:%s", authHeaderName)
 	}
-	strs := strings.Split(val, ":")
-	if len(strs) != 3 {
-		return fmt.Errorf("signature header invalid:%s", authHeaderKey)
+	ss := strings.Split(authStr, ":")
+	if len(ss) != 3 {
+		return fmt.Errorf("signature header invalid:%s", authHeaderName)
 	}
-	accessKey, signature, timestamp := strs[0], strs[1], strs[2]
+	accessKey, signature, deadlines := ss[0], ss[1], ss[2]
 
-	ttl, err := strconv.ParseInt(timestamp, 10, 64)
-	if err != nil || ttl < time.Now().Unix() {
+	deadline, err := strconv.ParseInt(deadlines, 10, 64)
+	if err != nil || deadline < time.Now().Unix() {
 		return errors.New("signature expired")
 	}
-	if accessKey != apiSign.AccessKey {
+	if accessKey != p.AccessKey {
 		return errors.New("invalid AccessKey")
 	}
 
-	var rawStr string
-	switch strings.ToUpper(req.Method) {
-	default:
-		// not support http method
-		return nil
-	case http.MethodPost, http.MethodPut, http.MethodDelete:
-		ct := filterFlags(req.Header.Get("Content-Type"))
-		switch strings.ToLower(ct) {
-		case "application/json":
-			byt, err := io.ReadAll(req.Body)
-			if err != nil {
-				_ = req.Body.Close()
-				return err
-			}
-			_ = req.Body.Close()
-
-			reqBody := make(RequestBodyMap)
-			if err := json.Unmarshal(byt, &reqBody); err != nil {
-				return err
-			}
-			bodyStr, err := reqBody.SortToString("&")
-			if err != nil {
-				return fmt.Errorf("SortToString %v", err)
-			}
-			rawStr = bodyStr
-			req.Body = io.NopCloser(bytes.NewBuffer(byt))
-		case "multipart/form-data":
-			rawStr, err = SortParamForm(req)
-			if err != nil {
-				return err
-			}
-		}
-
-	case http.MethodGet:
-		rawStr, err = SortParamForm(req)
-		if err != nil {
-			return err
-		}
+	raw, err := p.ToSignRaw(req)
+	if err != nil {
+		return err
 	}
-	rawStr = rawStr + timestamp
-	signStrDist := SignHash(apiSign.Method, []byte(rawStr), []byte(apiSign.AccessSecret))
-	if signStrDist != signature {
-		return fmt.Errorf("sign method invalid rawStr:%s", rawStr)
+	raw = fmt.Sprintf("%s%d", raw, deadline)
+	checkSignature := signHash(p.Method, []byte(raw), []byte(p.AccessSecret))
+	if checkSignature != signature {
+		return fmt.Errorf("sign method invalid raw:%s", raw)
 	}
 	return nil
 }
 
-// SortParamForm sort and format  URL | form-data param
-func SortParamForm(req *http.Request) (string, error) {
-	resource := ""
-	switch filterFlags(req.Header.Get("Content-Type")) {
-	case "multipart/form-data":
-		err := req.ParseMultipartForm(10 << 20)
-		if err != nil {
-			return "", err
-		}
-	default:
-		err := req.ParseForm()
-		if err != nil {
-			return "", err
-		}
+// Sign sign and return signature,deadline is validity period of signature
+func (p *APISign) Sign(req *http.Request, deadline int64) (string, error) {
+	raw, err := p.ToSignRaw(req)
+	if err != nil {
+		return "", err
 	}
-
-	var paramNames []string
-	if req.Form != nil && len(req.Form) > 0 {
-		for k := range req.Form {
-			paramNames = append(paramNames, k)
-		}
-		sort.Strings(paramNames)
-
-		var query []string
-		for _, k := range paramNames {
-			query = append(query, url.QueryEscape(k)+"="+url.QueryEscape(req.Form.Get(k)))
-		}
-		resource = strings.Join(query, "&")
+	if deadline == 0 {
+		deadline = time.Now().Unix() + p.TTL
 	}
-
-	return resource, nil
+	raw = fmt.Sprintf("%s%d", raw, deadline)
+	return signHash(p.Method, []byte(raw), []byte(p.AccessSecret)), nil
 }
 
-// SignHash hash and encode
-func SignHash(method Method, rawStr, secretKey []byte) (hash string) {
+// ToSignRaw 从req解析并生成已排序待签名参数字符串
+// 如果contentType是JSON，只取JSON参数
+// 其他：取URL PARAMS和BODY PARAMS
+func (p *APISign) ToSignRaw(req *http.Request) (string, error) {
+	var raw string
+	contentType := req.Header.Get("Content-Type")
+	switch {
+	case strings.Contains(contentType, "application/json"):
+		bz, err := io.ReadAll(req.Body)
+		if err != nil {
+			_ = req.Body.Close()
+			return "", err
+		}
+		_ = req.Body.Close()
+		req.Body = io.NopCloser(bytes.NewBuffer(bz))
+
+		var reqBody = make(requestBodyMap)
+		if err := json.Unmarshal(bz, &reqBody); err != nil {
+			return "", err
+		}
+		raw, _ = reqBody.SortToString("&")
+	default:
+		if err := req.ParseForm(); err != nil {
+			return "", err
+		}
+
+		if req.Form != nil && len(req.Form) > 0 {
+			var paramNames []string
+			for k := range req.Form {
+				paramNames = append(paramNames, k)
+			}
+			sort.Strings(paramNames)
+
+			var query []string
+			for _, k := range paramNames {
+				query = append(query, url.QueryEscape(k)+"="+url.QueryEscape(req.Form.Get(k)))
+			}
+			raw = strings.Join(query, "&")
+		}
+	}
+	return raw, nil
+}
+
+// signHash hash and encode
+func signHash(method Method, rawStr, secretKey []byte) (hash string) {
 	switch method {
 	case HmacSha1:
 		hash = sign.HMACSha1B64(rawStr, secretKey)
@@ -167,22 +157,10 @@ func SignHash(method Method, rawStr, secretKey []byte) (hash string) {
 	return
 }
 
-type RequestBodyMap map[string]interface{}
-
-func (r RequestBodyMap) GetStringValue(key string) (string, error) {
-	val, ok := r[key]
-	if !ok {
-		return "", fmt.Errorf("request body miss %s key", key)
-	}
-	v, ok := val.(string)
-	if !ok {
-		return "", fmt.Errorf("request body %s key not string type", key)
-	}
-	return v, nil
-}
+type requestBodyMap map[string]interface{}
 
 // SortToString request body param sort format
-func (r RequestBodyMap) SortToString(separator string) (string, error) {
+func (r requestBodyMap) SortToString(separator string) (string, error) {
 	if len(r) == 0 {
 		return "", nil
 	}
@@ -213,13 +191,13 @@ func (r RequestBodyMap) SortToString(separator string) (string, error) {
 			if err := json.NewEncoder(buffer).Encode(v.Value); err != nil {
 				return "", err
 			}
-			s = append(s, fmt.Sprintf("%s=%s", v.Key, string(r.TrimNewline(buffer.Bytes()))))
+			s = append(s, fmt.Sprintf("%s=%s", v.Key, string(r.trimNewline(buffer.Bytes()))))
 		}
 	}
 	return strings.Join(s, separator), nil
 }
 
-func (r RequestBodyMap) TrimNewline(buf []byte) []byte {
+func (r requestBodyMap) trimNewline(buf []byte) []byte {
 	if i := len(buf) - 1; i >= 0 {
 		if buf[i] == '\n' {
 			buf = buf[:i]
@@ -237,12 +215,3 @@ type KvSlice []Kv
 func (s KvSlice) Len() int           { return len(s) }
 func (s KvSlice) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s KvSlice) Less(i, j int) bool { return s[i].Key < s[j].Key }
-
-func filterFlags(content string) string {
-	for i, char := range content {
-		if char == ' ' || char == ';' {
-			return content[:i]
-		}
-	}
-	return content
-}
