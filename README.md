@@ -1,31 +1,31 @@
 # utils
 
 ```
-├── codec #一种混淆数据的编解码方法
+├── codec # 一种数据混淆编码方法
 │   ├── codec.go
 │   ├── codec_test.go
 │   └── README.md
-├── container
-│   ├── bitset #位图
+├── container # 常用容器
+│   ├── bitset
 │   │   ├── bitset.go
 │   │   └── bitset_test.go
-│   ├── blocking_queue #阻塞队列
+│   ├── blocking_queue
 │   │   ├── blocking_queue.go
 │   │   └── blocking_queue_test.go
-│   ├── bloom #布隆过滤器
+│   ├── bloom
 │   │   ├── bloom9.go
 │   │   └── bloom9_test.go
-│   ├── fifo #固定大小的fifo，特点是使用固定大小内存
+│   ├── fifo
 │   │   ├── fifo.go
 │   │   └── fifo_test.go
-│   ├── omap #有序的map - 红黑树
+│   ├── omap
 │   │   ├── omap.go
 │   │   └── omap_test.go
-│   └── pqueue #优先级队列 - 小堆
+│   └── pqueue
 │       ├── priority_queue.go
 │       ├── priority_queue_test.go
 │       └── README.md
-├── crypto
+├── crypto # AES,DES加密解密
 │   ├── aes256cbc.go
 │   ├── aes256cbc_test.go
 │   ├── aes.go
@@ -33,70 +33,86 @@
 │   ├── tripledes_b_test.go
 │   ├── tripledes.go
 │   └── tripledes_test.go
-├── etcd
-│   ├── discovery #服务发现
+├── etcdx # 基于etch的服务发行、选主、分布式锁
+│   ├── discovery
+│   │   ├── go.mod
 │   │   ├── master.go
 │   │   └── worker.go
-│   ├── master #选主
+│   ├── master
+│   │   ├── go.mod
 │   │   └── master.go
 │   ├── readme.md
-│   └── sync #分布式锁
+│   └── sync
+│       ├── go.mod
 │       ├── sync.go
 │       └── sync_test.go
-├── go.mod
-├── go.sum
-├── hash
+├── hash # 常用hash方法和一致性hash
 │   ├── cityhash
 │   │   ├── cityhash.go
 │   │   └── cityhash_test.go
+│   ├── hash.go
 │   ├── ketama
 │   │   ├── ketama.go
 │   │   └── ketama_test.go
 │   └── murmurhash3
 │       ├── mmhash3.go
 │       └── mmhash3_test.go
-├── id
-│   ├── code #生成代码，通常用于生成邀请码
-│   │   ├── code.go
-│   │   └── code_test.go
-│   └── uuid #uuid guid生成
-│       ├── uuid.go
-│       └── uuid_test.go
-├── LICENSE
-├── log #基于zap的日志库
+├── httpx # http sign
+│   ├── go.mod
+│   ├── README.md
+│   ├── sign.go
+│   └── sign_test.go
+├── log # 封装基于zap.Logger的日志
+│   ├── go.mod
 │   ├── zap.go
 │   └── zap_test.go
-├── natx #基于nat的请求/应答模式封装
+├── natx # nat使用封装
 │   ├── defaultApp.go
 │   ├── defaultApp_test.go
+│   ├── go.mod
 │   ├── msgpack_enc.go
 │   ├── natc.go
 │   ├── natx.go
 │   └── README.md
-├── nsq #nsq的生产者和消费者封装
+├── nsqx # nsq使用封装
 │   ├── consumer.go
+│   ├── go.mod
 │   └── producer.go
-├── pool 
-│   ├── allocator #内存分配器，使用sync.Pool，内部分配16种大小规格pool
+├── pool # 内存分配与优化
+│   ├── allocator
 │   │   ├── alloc.go
 │   │   └── alloc_test.go
-│   ├── xbufio #
+│   ├── xbufio
 │   │   └── buffio.go
-│   ├── xbytes #固定大小的内存分配
+│   ├── xbytes
 │   │   ├── bytes.go
 │   │   └── writer.go
-│   └── xtime #定时器池 小根堆
+│   └── xtime # 基于内存小根堆定时器，扩展了timer func方法:func(interface{})
 │       └── xtime.go
+├── pprof # http pprof
+│   ├── pprof_http.go
+│   └── pprof_http_test.go
+├── random # 随机字符串
+│   └── string.go
 ├── README.md
-├── redis #redis基础指令+乐观锁
+├── redisx # redis常用封装和乐观锁
+│   ├── go.mod
 │   ├── mutex.go
 │   ├── redis.go
 │   └── redis_test.go
-└── time
-    ├── minheap #定时器池 小根堆
-    │   ├── timer.go
-    │   └── timer_test.go
-    └── wheel #定时器池 时间轮
-        ├── timer.go
-        └── timer_test.go
+├── referral # 邀请码
+│   ├── referral.go
+│   └── refferal_test.go
+├── sign # hmac签名
+│   ├── hmac.go
+│   └── hmac_test.go
+├── timerx # 定时器
+│   ├── minheap # 小根堆
+│   │   ├── timer.go
+│   │   └── timer_test.go
+│   └── wheel # 时间轮
+│       ├── timer.go
+│       └── timer_test.go
+└── validator # 参数验证
+    └── validator.go
 ``` 
