@@ -6,10 +6,12 @@ import (
 )
 
 func JsonPretty(v interface{}) string {
-	bz, _ := json.Marshal(v)
+	bz, _ := json.MarshalIndent(v, "", "  ")
 	return string(bz)
 }
 
 func JsonPrettyToStdout(v interface{}) {
-	_ = json.NewEncoder(os.Stdout).Encode(v)
+	en := json.NewEncoder(os.Stdout)
+	en.SetIndent("", " ")
+	_ = en.Encode(v)
 }
