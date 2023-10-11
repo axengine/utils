@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	go.etcd.io/etcd/client/v2 v2.305.7
-	golang.org/x/net v0.7.0
+	golang.org/x/net v0.17.0
 )
 
 require (
