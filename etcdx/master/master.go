@@ -1,11 +1,11 @@
 package master
 
 import (
+	"context"
 	"log"
 	"time"
 
 	"go.etcd.io/etcd/client/v2"
-	"golang.org/x/net/context"
 )
 
 type Master struct {

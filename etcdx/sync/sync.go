@@ -2,6 +2,7 @@
 package sync
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -10,7 +11,6 @@ import (
 	"time"
 
 	"go.etcd.io/etcd/client/v2"
-	"golang.org/x/net/context"
 )
 
 const (

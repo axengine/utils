@@ -1,11 +1,8 @@
 module github.com/axengine/utils/etcdx/sync
 
-go 1.20
+go 1.23.0
 
-require (
-	go.etcd.io/etcd/client/v2 v2.305.7
-	golang.org/x/net v0.35.0
-)
+require go.etcd.io/etcd/client/v2 v2.305.7
 
 require (
 	github.com/coreos/go-semver v0.3.0 // indirect
