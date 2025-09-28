@@ -2,12 +2,13 @@ package pprof
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 func MustStart(listen string) {
@@ -39,18 +40,15 @@ func Start(listen string) error {
 // StartAsync run pprof http server async
 // usage:go Start(ctx,wg,listen)
 func StartAsync(ctx context.Context, wg *sync.WaitGroup, listen string) {
-	defer wg.Done()
 	server := &http.Server{
 		Addr:    listen,
 		Handler: http.DefaultServeMux,
 	}
-	wg.Add(1)
-	go func() {
+	wg.Go(func() {
 		if err := server.ListenAndServe(); err != nil {
 			log.Println("start pprof server failed", err)
 		}
-		wg.Done()
-	}()
+	})
 
 	<-ctx.Done()
 
