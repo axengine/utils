@@ -44,11 +44,13 @@ func StartAsync(ctx context.Context, wg *sync.WaitGroup, listen string) {
 		Addr:    listen,
 		Handler: http.DefaultServeMux,
 	}
-	wg.Go(func() {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		if err := server.ListenAndServe(); err != nil {
 			log.Println("start pprof server failed", err)
 		}
-	})
+	}()
 
 	<-ctx.Done()
 
