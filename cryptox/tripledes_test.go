@@ -1,4 +1,4 @@
-package crypto
+package cryptox
 
 import (
 	"encoding/base64"

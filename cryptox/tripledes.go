@@ -1,15 +1,13 @@
-//package crypto
-//DES和3DES加解密
-package crypto
+package cryptox
 
 import (
 	"crypto/des"
 	"errors"
 )
 
-//TripleDesECBEncrypt 3des加密 使用加密模式为ECB 填充方式为pkcs5
-//入参:待加密原始数据 字符串key
-//返回值:加密后的base64字符串
+// TripleDesECBEncrypt 3des加密 使用加密模式为ECB 填充方式为pkcs5
+// 入参:待加密原始数据 字符串key
+// 返回值:加密后的base64字符串
 func TripleDesECBEncrypt(origData []byte, key string) ([]byte, error) {
 	bKey := transKey(key)
 	block, err := des.NewTripleDESCipher(bKey)
@@ -19,7 +17,7 @@ func TripleDesECBEncrypt(origData []byte, key string) ([]byte, error) {
 	bs := block.BlockSize()
 	origData = PKCSPadding(origData, bs)
 	if len(origData)%bs != 0 {
-		return nil, errors.New("Need a multiple of the blocksize")
+		return nil, errors.New("need a multiple of the blocksize")
 	}
 	out := make([]byte, len(origData))
 	dst := out
@@ -31,7 +29,7 @@ func TripleDesECBEncrypt(origData []byte, key string) ([]byte, error) {
 	return out, nil
 }
 
-//TripleDesECBDecrypt 3des解密
+// TripleDesECBDecrypt 3des解密
 func TripleDesECBDecrypt(crypted []byte, key string) ([]byte, error) {
 	bKey := transKey(key)
 	block, err := des.NewTripleDESCipher(bKey)
@@ -53,7 +51,7 @@ func TripleDesECBDecrypt(crypted []byte, key string) ([]byte, error) {
 	return out, nil
 }
 
-//0填充
+// 0填充
 func transKey(key string) []byte {
 	//key只取24位
 	bKey := make([]byte, 24)

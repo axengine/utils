@@ -1,12 +1,12 @@
 package sync
 
 import (
-	"go.etcd.io/etcd/client/v2"
+	"context"
 	"log"
 	"testing"
 	"time"
 
-	"golang.org/x/net/context"
+	"go.etcd.io/etcd/client/v2"
 )
 
 func newKeysAPI(machines []string) client.KeysAPI {

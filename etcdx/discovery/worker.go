@@ -1,13 +1,13 @@
 package discovery
 
 import (
+	"context"
 	"encoding/json"
-	"go.etcd.io/etcd/client/v2"
 	"log"
 	"runtime"
 	"time"
 
-	"golang.org/x/net/context"
+	"go.etcd.io/etcd/client/v2"
 )
 
 type Worker struct {
